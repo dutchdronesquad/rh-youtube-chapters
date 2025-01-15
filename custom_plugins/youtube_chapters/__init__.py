@@ -206,13 +206,15 @@ class YouTubeChapters:
                 "No start time set. Please set a start time before exporting."
             )
             return
-        # Check if the start time is before the first chapter entry
-        if self.start_time > self.chapters[0][0]:
-            local_first_chapter = self.chapters[0][0].astimezone()
-            self._rhapi.ui.message_notify(
-                "Start time is after the first chapter log. Please set a start time "
-                f"before {local_first_chapter.strftime('%Y-%m-%d %H:%M:%S %Z')}."
-            )
+
+        # Filter chapters after the start time
+        filtered_chapters = [
+            (ts, heat_name) for ts, heat_name in self.chapters if ts >= self.start_time
+        ]
+        if not filtered_chapters:
+            local_time = self.start_time.astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
+            self._rhapi.ui.message_notify(f"No chapters to export after {local_time}")
+            self.logger.info(f"{self.PREFIX}: no chapters to export after {local_time}")
             return
 
         # Add a timestamp to the filename
