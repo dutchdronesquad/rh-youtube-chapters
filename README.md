@@ -1,24 +1,47 @@
-# RotorHazard Plugin Template
+<!-- PROJECT SHIELDS -->
+![Project Stage][project-stage-shield]
+![Project Maintenance][maintenance-shield]
+[![License][license-shield]](LICENSE)
 
-This is a basic template repository for creating a plugin for the RotorHazard timing platform. It is intended to be used as a starting point for creating a new plugin.
+# YouTube Chapters
 
-## Features
+When you publish a video on YouTube, you have the option to add a [chapters list](https://support.google.com/youtube/answer/9884579) in the description, which divides the video timeline into chapters for easier navigation.
 
-- **Pre-commit checks**: to run checks and tests on each commit.
-- **Python virtual environment**: uses [uv] to manage the python virtual environment and dependencies.
-- **RHFest validation**: GitHub action to validate the plugin manifest file against the RHFest schema.
-- **Renovate**: uses [Renovate](https://docs.renovatebot.com/) to keep dependencies up to date.
+This RotorHazard plugin will help you to generate a chapters list based on the start time of each heat. Ideal for when you want to publish the VOD of your livestream afterwards and make it easier for viewers to navigate to a specific round / heat of the race.
 
-## Development
+## Functionality
 
-How to setup the development environment.
+![alt plugin overview](https://raw.githubusercontent.com/dutchdronesquad/rh-youtube-chapters/main/assets/plugin_overview.png)
 
-### Prerequisites
+- Every time a heat starts it will be logged as a chapter entry.
+- Based on the start time, the plugin will generate a list of chapters for YouTube.
+- Export a txt file where you can copy/paste the chapters into your YouTube video description.
+
+## Installation
+
+> [!NOTE]
+> This plugin is still in development and only works with the development branch of RotorHazard.
+
+- Bash install script
+
+## Getting started
+
+1. Note when you started live streaming (local time).
+2. Do the race timing as you are used to, each heat start will be logged automatically.
+3. When you are done, fill in the start time and confirm with the `Set Start Time` button.
+4. Click on `Export Chapters` to generate a txt file with the chapters.
+    - You will see the download link after page refresh under **Exported Chapters List**.
+5. Don't forget to reset the logging every time you have a new event.
+
+## Setting up development environment
+
+This Python project relies on [uv] as its dependency manager,
+providing comprehensive management and control over project dependencies.
 
 You need the following tools to get started:
 
 - [uv] - A python virtual environment/package manager
-- [Python] 3.13 - The programming language
+- [Python] 3.11 (or higher) - The programming language
 
 ### Installation
 
@@ -56,6 +79,10 @@ uv run pre-commit run
 Distributed under the **MIT** License. See [`LICENSE`](LICENSE) for more information.
 
 <!-- LINK -->
+[license-shield]: https://img.shields.io/github/license/dutchdronesquad/rh-youtube-chapters.svg
+[maintenance-shield]: https://img.shields.io/maintenance/yes/2025.svg
+[project-stage-shield]: https://img.shields.io/badge/project%20stage-experimental-yellow.svg
+
 [uv]: https://docs.astral.sh/uv/
 [Python]: https://www.python.org/
 [pre-commit]: https://pre-commit.com/
