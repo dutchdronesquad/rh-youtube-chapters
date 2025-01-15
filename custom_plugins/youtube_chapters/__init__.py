@@ -58,8 +58,9 @@ class YouTubeChapters:
             field=UIField(
                 name="start_time",
                 label="Stream - Start Time",
-                field_type=UIFieldType.DATETIME,
+                field_type=UIFieldType.TEXT,
                 desc="The date/time your livestream started.",
+                placeholder="YYYY-MM-DDTHH:MM",
             ),
             panel="youtube_chapters",
         )
@@ -108,9 +109,13 @@ class YouTubeChapters:
                     self.start_time = (
                         datetime.strptime(
                             data["start_time"], "%Y-%m-%d %H:%M:%S"
-                        ).astimezone(timezone.utc)
+                        ).replace(tzinfo=timezone.utc)
                         if data["start_time"]
                         else None
+                    )
+                    local_time = self.start_time.astimezone()
+                    self._rhapi.db.option_set(
+                        "start_time", local_time.strftime("%Y-%m-%dT%H:%M")
                     )
                     self.chapters = [
                         (
@@ -122,6 +127,12 @@ class YouTubeChapters:
                         for ts, heat in data["chapters"]
                     ]
 
+                    # Log the loaded data
+                    if self.start_time:
+                        self.logger.info(
+                            f"{self.PREFIX}: loaded start time "
+                            f"{self.start_time.strftime('%Y-%m-%d %H:%M:%S')} UTC"
+                        )
                     if self.chapters:
                         self.logger.info(
                             f"{self.PREFIX}: loaded {len(self.chapters)} "
@@ -152,6 +163,8 @@ class YouTubeChapters:
             )
             self.save_chapters()
         except ValueError:
+            self._rhapi.db.option_set("start_time", "")
+            self.start_time = None
             self._rhapi.ui.message_notify("Invalid date/time format.")
 
     def on_race_start(self, args: dict[str, str]) -> None:
@@ -213,8 +226,11 @@ class YouTubeChapters:
         ]
         if not filtered_chapters:
             local_time = self.start_time.astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
+            utc_time = self.start_time.strftime("%Y-%m-%d %H:%M:%S")
             self._rhapi.ui.message_notify(f"No chapters to export after {local_time}")
-            self.logger.info(f"{self.PREFIX}: no chapters to export after {local_time}")
+            self.logger.info(
+                f"{self.PREFIX}: no chapters to export after {utc_time} UTC"
+            )
             return
 
         # Add a timestamp to the filename
