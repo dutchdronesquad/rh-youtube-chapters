@@ -57,10 +57,9 @@ class YouTubeChapters:
         self._rhapi.fields.register_option(
             field=UIField(
                 name="start_time",
-                label="Start Time of Livestream",
-                field_type=UIFieldType.TEXT,
-                desc="Fill in the format: YYYY-MM-DDTHH:MM:SS",
-                placeholder="YYYY-MM-DDTHH:MM:SS",
+                label="Stream - Start Time",
+                field_type=UIFieldType.DATETIME,
+                desc="The date/time your livestream started.",
             ),
             panel="youtube_chapters",
         )
