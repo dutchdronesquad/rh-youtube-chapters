@@ -58,9 +58,8 @@ class YouTubeChapters:
             field=UIField(
                 name="start_time",
                 label="Stream - Start Time",
-                field_type=UIFieldType.TEXT,
+                field_type=UIFieldType.DATETIME,
                 desc="The date/time your livestream started.",
-                placeholder="YYYY-MM-DDTHH:MM",
             ),
             panel="youtube_chapters",
         )
