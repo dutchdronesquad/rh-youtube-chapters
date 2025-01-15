@@ -7,7 +7,7 @@
 
 When you publish a video on YouTube, you have the option to add a [chapters list](https://support.google.com/youtube/answer/9884579) in the description, which divides the video timeline into chapters for easier navigation.
 
-This RotorHazard plugin will help you to generate a chapters list based on the start time of each heat. Ideal for when you want to publish the VOD of your livestream afterwards and make it easier for viewers to navigate to a specific round / heat of the race.
+This [RotorHazard](https://github.com/RotorHazard/RotorHazard) plugin will help you to generate a chapters list based on the start time of each heat. Ideal for when you want to publish the VOD of your livestream afterwards and make it easier for viewers to navigate to a specific round / heat of the race.
 
 ## Functionality
 
@@ -19,10 +19,24 @@ This RotorHazard plugin will help you to generate a chapters list based on the s
 
 ## Installation
 
-> [!NOTE]
-> This plugin is still in development and only works with the development branch of RotorHazard.
+> [!WARNING]
+> This plugin is still in development and only works currently with the dev branch of RotorHazard.
 
-- Bash install script
+1. Install the **YouTube Chapters** plugin, by running the following command in your terminal at the device where RotorHazard is installed:
+```bash
+bash -c "$(curl -fsSL https://short.dutchdronesquad.nl/install-youtube-chapters)"
+```
+
+2. You'll be prompted to choose between **stable** or **development**:
+    - **stable**: Choose this option if you want to install a stable release.
+        - The script will fetch the last 5 stable releases from GitHub.
+        - Choose the version you want to install and press enter.
+    - **development**: Choose this option if you want to install the latest development version.
+        - The script will fetch the main branch from GitHub.
+3. If the plugin is already in RotorHazard, you'll be prompted to update it.
+    - Choose **y (yes)** to update the plugin.
+    - Choose **n (no)** to exit the script.
+4. When the installation is finished, restart RotorHazard.
 
 ## Getting started
 
@@ -73,6 +87,10 @@ To manual run only on the staged files, use the following command:
 ```bash
 uv run pre-commit run
 ```
+
+## Credits
+
+This plugin has been requested by [Dutch Drone Racing](https://dutchdroneracing.com/) (DDR) and developed by [Dutch Drone Squad](https://dutchdronesquad.nl/) (DDS).
 
 ## License
 
