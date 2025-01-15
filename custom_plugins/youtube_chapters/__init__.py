@@ -58,8 +58,9 @@ class YouTubeChapters:
             field=UIField(
                 name="start_time",
                 label="Stream - Start Time",
-                field_type=UIFieldType.DATETIME,
+                field_type=UIFieldType.TEXT,
                 desc="The date/time your livestream started.",
+                placeholder="YYYY-MM-DDTHH:MM",
             ),
             panel="youtube_chapters",
         )
@@ -152,6 +153,8 @@ class YouTubeChapters:
             )
             self.save_chapters()
         except ValueError:
+            self._rhapi.db.option_set("start_time", "")
+            self.start_time = None
             self._rhapi.ui.message_notify("Invalid date/time format.")
 
     def on_race_start(self, args: dict[str, str]) -> None:
