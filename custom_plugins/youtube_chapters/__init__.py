@@ -142,7 +142,7 @@ class YouTubeChapters:
             self._rhapi.ui.message_notify("No start time set.")
             return
 
-        # Set the start time
+        # Set the start time in UTC
         try:
             self.start_time = datetime.strptime(
                 start_time_str, "%Y-%m-%dT%H:%M"
@@ -167,7 +167,7 @@ class YouTubeChapters:
         self.chapters.append((current_time, heat_name))
         self.logger.info(
             f"{self.PREFIX}: logged '{heat_name}' "
-            f"at {current_time.strftime('%H:%M:%S')}"
+            f"at {current_time.strftime('%H:%M:%S')} UTC"
         )
         self.save_chapters()
 
@@ -206,22 +206,27 @@ class YouTubeChapters:
                 "No start time set. Please set a start time before exporting."
             )
             return
-        # Check if the start time is before the first chapter entry
-        if self.start_time > self.chapters[0][0]:
-            self._rhapi.ui.message_notify(
-                "Start time is after the first chapter log. Please set a start time "
-                f"before {self.chapters[0][0].strftime('%Y-%m-%d %H:%M:%S')} UTC."
-            )
+
+        # Filter chapters after the start time
+        filtered_chapters = [
+            (ts, heat_name) for ts, heat_name in self.chapters if ts >= self.start_time
+        ]
+        if not filtered_chapters:
+            local_time = self.start_time.astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
+            self._rhapi.ui.message_notify(f"No chapters to export after {local_time}")
+            self.logger.info(f"{self.PREFIX}: no chapters to export after {local_time}")
             return
 
         # Add a timestamp to the filename
-        timestamp = datetime.now().astimezone(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now().astimezone().strftime("%Y%m%d_%H%M%S")
         export_file = self.EXPORT_DIR / f"{timestamp}-youtube_chapters.txt"
 
         with export_file.open("w") as file:
             # Write the header information
-            file.write(f"Export: {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}\n")  # noqa: DTZ005
-            file.write(f"Start: {self.start_time.strftime('%Y-%m-%d %H:%M:%S UTC')}\n")
+            local_now = datetime.now().astimezone()
+            local_start_time = self.start_time.astimezone()
+            file.write(f"Export: {local_now.strftime('%Y-%m-%d %H:%M:%S %Z')}\n")
+            file.write(f"Start: {local_start_time.strftime('%Y-%m-%d %H:%M:%S %Z')}\n")
             file.write("=" * 40 + "\n")
 
             # Write the chapters
