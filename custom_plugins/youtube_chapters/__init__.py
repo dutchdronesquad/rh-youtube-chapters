@@ -57,10 +57,10 @@ class YouTubeChapters:
         self._rhapi.fields.register_option(
             field=UIField(
                 name="start_time",
-                label="Stream - Start Time",
+                label="Start Time of Livestream",
                 field_type=UIFieldType.TEXT,
-                desc="The date/time your livestream started.",
-                placeholder="YYYY-MM-DDTHH:MM",
+                desc="Fill in the format: YYYY-MM-DDTHH:MM:SS",
+                placeholder="YYYY-MM-DDTHH:MM:SS",
             ),
             panel="youtube_chapters",
         )
@@ -115,7 +115,7 @@ class YouTubeChapters:
                     )
                     local_time = self.start_time.astimezone()
                     self._rhapi.db.option_set(
-                        "start_time", local_time.strftime("%Y-%m-%dT%H:%M")
+                        "start_time", local_time.strftime("%Y-%m-%dT%H:%M:%S")
                     )
                     self.chapters = [
                         (
@@ -156,7 +156,7 @@ class YouTubeChapters:
         # Set the start time in UTC
         try:
             self.start_time = datetime.strptime(
-                start_time_str, "%Y-%m-%dT%H:%M"
+                start_time_str, "%Y-%m-%dT%H:%M:%S"
             ).astimezone(timezone.utc)
             self._rhapi.ui.message_notify(
                 f"Start time set to {self.start_time.strftime('%Y-%m-%d %H:%M:%S UTC')}"
