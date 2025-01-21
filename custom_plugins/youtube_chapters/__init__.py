@@ -245,12 +245,23 @@ class YouTubeChapters:
             file.write(f"Start: {local_start_time.strftime('%Y-%m-%d %H:%M:%S %Z')}\n")
             file.write("=" * 40 + "\n")
 
+            # Write the start of the livestream
+            file.write("00:00 - Start of Livestream\n")
+
             # Write the chapters
             for ts, heat_name in self.chapters:
                 delta = (ts - self.start_time).total_seconds()
-                file.write(
-                    f"{int(delta // 60):02}:{int(delta % 60):02} - {heat_name}\n"
-                )
+
+                # Format the time as HH:MM or HH:MM:SS
+                hours, remainder = divmod(delta, 3600)
+                minutes, seconds = divmod(remainder, 60)
+                if hours > 0:
+                    formatted_time = (
+                        f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
+                    )
+                else:
+                    formatted_time = f"{int(minutes):02}:{int(seconds):02}"
+                file.write(f"{formatted_time} - {heat_name}\n")
 
         self._rhapi.ui.message_notify(
             f"YouTube chapters exported to data/{export_file.name}"
