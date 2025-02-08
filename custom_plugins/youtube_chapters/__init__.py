@@ -172,8 +172,12 @@ class YouTubeChapters:
         heat_info: Heat = self._rhapi.db.heat_by_id(args.get("heat_id"))
         round_number = self._rhapi.db.heat_max_round(args.get("heat_id"))
 
-        # Get the heat name with round number
-        heat_name = f"{heat_info.display_name} (Round {round_number + 1})"
+        # If heat_info.display_name is None, use "Practice" without round number
+        if heat_info.display_name is None:
+            heat_name = "Practice"
+        else:
+            # Always include the round number if a heat name is available
+            heat_name = f"{heat_info.display_name} (Round {round_number + 1})"
 
         # Log the chapter
         current_time = datetime.now(timezone.utc)
