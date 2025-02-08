@@ -5,5 +5,5 @@
   "description": "A plugin that generates a chapter log for YouTube videos.",
   "documentation": "https://github.com/dutchdronesquad/rh-youtube-chapters/",
   "required_rhapi_version": "1.0",
-  "version": "0.1.2"
+  "version": "0.1.3"
 }
