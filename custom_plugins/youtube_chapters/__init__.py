@@ -119,8 +119,8 @@ class YouTubeChapters:
                     )
                     self.chapters = [
                         (
-                            datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").astimezone(
-                                timezone.utc
+                            datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").replace(
+                                tzinfo=timezone.utc
                             ),
                             heat,
                         )
