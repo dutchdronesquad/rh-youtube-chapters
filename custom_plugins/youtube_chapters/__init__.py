@@ -86,13 +86,14 @@ class YouTubeChapters:
         )
 
     def save_chapters(self) -> None:
-        """Save chapters to a file."""
+        """Save chapters to chapters log file."""
         data = {
-            "start_time": self.start_time.strftime("%Y-%m-%d %H:%M:%S")
+            "start_time": self.start_time.replace(microsecond=0).isoformat()
             if self.start_time
             else None,
             "chapters": [
-                (ts.strftime("%Y-%m-%d %H:%M:%S"), heat) for ts, heat in self.chapters
+                (ts.replace(microsecond=0).isoformat(), heat)
+                for ts, heat in self.chapters
             ],
         }
         with self.LOG_FILE.open("w") as file:
@@ -106,24 +107,26 @@ class YouTubeChapters:
             with self.LOG_FILE.open() as file:
                 try:
                     data = json.load(file)
+
+                    # Parse start_time from ISO format
                     self.start_time = (
-                        datetime.strptime(
-                            data["start_time"], "%Y-%m-%d %H:%M:%S"
-                        ).replace(tzinfo=timezone.utc)
+                        datetime.fromisoformat(data["start_time"]).astimezone(
+                            timezone.utc
+                        )
                         if data["start_time"]
                         else None
                     )
-                    local_time = self.start_time.astimezone()
-                    self._rhapi.db.option_set(
-                        "start_time", local_time.strftime("%Y-%m-%dT%H:%M:%S")
-                    )
-                    self.chapters = [
-                        (
-                            datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").astimezone(
-                                timezone.utc
-                            ),
-                            heat,
+
+                    # Convert start_time to local time
+                    if self.start_time:
+                        local_time = self.start_time.astimezone()
+                        self._rhapi.db.option_set(
+                            "start_time", local_time.strftime("%Y-%m-%dT%H:%M:%S")
                         )
+
+                    # Parse chapter timestamps from ISO format
+                    self.chapters = [
+                        (datetime.fromisoformat(ts), heat)
                         for ts, heat in data["chapters"]
                     ]
 
@@ -153,11 +156,13 @@ class YouTubeChapters:
             self._rhapi.ui.message_notify("No start time set.")
             return
 
-        # Set the start time in UTC
         try:
-            self.start_time = datetime.strptime(
+            # Interpret the input as local time and convert it to UTC
+            local_time = datetime.strptime(
                 start_time_str, "%Y-%m-%dT%H:%M:%S"
-            ).astimezone(timezone.utc)
+            ).astimezone()
+            self.start_time = local_time.astimezone(timezone.utc)
+
             self._rhapi.ui.message_notify(
                 f"Start time set to {self.start_time.strftime('%Y-%m-%d %H:%M:%S UTC')}"
             )
@@ -172,12 +177,12 @@ class YouTubeChapters:
         heat_info: Heat = self._rhapi.db.heat_by_id(args.get("heat_id"))
         round_number = self._rhapi.db.heat_max_round(args.get("heat_id"))
 
-        # If heat_info.display_name is None, use "Practice" without round number
-        if heat_info.display_name is None:
-            heat_name = "Practice"
-        else:
-            # Always include the round number if a heat name is available
-            heat_name = f"{heat_info.display_name} (Round {round_number + 1})"
+        # Set heat name to "Practice" if display_name is None else use display_name
+        heat_name = (
+            "Practice"
+            if heat_info.display_name is None
+            else f"{heat_info.display_name} (Round {round_number + 1})"
+        )
 
         # Log the chapter
         current_time = datetime.now(timezone.utc)
@@ -228,6 +233,7 @@ class YouTubeChapters:
         filtered_chapters = [
             (ts, heat_name) for ts, heat_name in self.chapters if ts >= self.start_time
         ]
+
         if not filtered_chapters:
             local_time = self.start_time.astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
             utc_time = self.start_time.strftime("%Y-%m-%d %H:%M:%S")
@@ -253,18 +259,17 @@ class YouTubeChapters:
             file.write("00:00 - Start of Livestream\n")
 
             # Write the chapters
-            for ts, heat_name in self.chapters:
+            for ts, heat_name in filtered_chapters:
                 delta = (ts - self.start_time).total_seconds()
 
                 # Format the time as HH:MM or HH:MM:SS
                 hours, remainder = divmod(delta, 3600)
                 minutes, seconds = divmod(remainder, 60)
-                if hours > 0:
-                    formatted_time = (
-                        f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
-                    )
-                else:
-                    formatted_time = f"{int(minutes):02}:{int(seconds):02}"
+                formatted_time = (
+                    f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
+                    if hours > 0
+                    else f"{int(minutes):02}:{int(seconds):02}"
+                )
                 file.write(f"{formatted_time} - {heat_name}\n")
 
         self._rhapi.ui.message_notify(
