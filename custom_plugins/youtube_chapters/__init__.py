@@ -17,9 +17,6 @@ if TYPE_CHECKING:
 class YouTubeChapters:
     """YouTube Chapters plugin class."""
 
-    BASE_DIR = Path(__file__).parent
-    EXPORT_DIR = BASE_DIR / "data"
-    LOG_FILE = EXPORT_DIR / "chapterslog.json"
     PREFIX = "YT Chapters"
 
     def __init__(self, rhapi: object) -> None:
@@ -35,11 +32,16 @@ class YouTubeChapters:
         self.start_time = None
         self.chapters = []
 
-        # Register UI elements
-        self._register_ui()
+        # Determine plugin data location
+        self.BASE_DIR = Path(self._rhapi.server.data_dir)
+        self.EXPORT_DIR = self.BASE_DIR / "youtube_chapters"
+        self.LOG_FILE = self.EXPORT_DIR / "chapterslog.json"
 
         # Create a data directory if it doesn't exist
-        Path(self.EXPORT_DIR).mkdir(parents=True, exist_ok=True)
+        self.EXPORT_DIR.mkdir(parents=True, exist_ok=True)
+
+        # Register UI elements
+        self._register_ui()
 
     def _register_ui(self) -> None:
         """Register UI elements."""
@@ -273,7 +275,7 @@ class YouTubeChapters:
                 file.write(f"{formatted_time} - {heat_name}\n")
 
         self._rhapi.ui.message_notify(
-            f"YouTube chapters exported to data/{export_file.name}"
+            f"YouTube chapters exported to rh-data/youtube_chapters/{export_file.name}"
         )
         self.logger.info(f"{self.PREFIX}: exported to {export_file}.")
 
@@ -313,7 +315,7 @@ def initialize(rhapi: object) -> None:
     rhapi.events.on(Evt.STARTUP, plugin.load_chapters)
     rhapi.events.on(Evt.RACE_STAGE, plugin.on_race_start)
 
-    bp = Blueprint("chapter_files", __name__, static_folder="data")
+    bp = Blueprint("chapter_files", __name__)
 
     @bp.route("/data/<path:filename>")
     def download_file(filename: str) -> None:
