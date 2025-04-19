@@ -3,6 +3,9 @@
 ![Project Maintenance][maintenance-shield]
 [![License][license-shield]](LICENSE)
 
+![RHCP Badge][rhcp-shield]
+[![RHFest][rhfest-shield]][rhfest-url]
+
 # YouTube Chapters
 
 When you publish a video on YouTube, you have the option to add a [chapters list](https://support.google.com/youtube/answer/9884579) in the description, which divides the video timeline into chapters for easier navigation.
@@ -22,6 +25,22 @@ This [RotorHazard](https://github.com/RotorHazard/RotorHazard) plugin will help 
 > [!WARNING]
 > This plugin is still in development and only works currently with the dev branch of RotorHazard.
 
+### Community Plugins (GUI)
+
+_This method is the easiest way to install the plugin._
+
+The **YouTube Chapters** plugin is available as a [community plugin](https://rotorhazard.github.io/community-plugins/) for RotorHazard. You can install it directly from the RotorHazard web interface.
+
+1. Go to the **Settings** page in RotorHazard.
+2. Click on the **Plugins** tab and click on the **Browse Community Plugins (online only)** button.
+3. Search for **YouTube Chapters** in the list of available plugins.
+4. Click on the **Install** button to install the plugin.
+5. After the installation is complete, restart RotorHazard to load the plugin.
+
+### Install script (CLI)
+
+_This method is for more advanced users who are comfortable with the command line._
+
 1. Install the **YouTube Chapters** plugin, by running the following command in your terminal at the device where RotorHazard is installed:
 ```bash
 bash -c "$(curl -fsSL https://short.dutchdronesquad.nl/install-youtube-chapters)"
@@ -36,7 +55,7 @@ bash -c "$(curl -fsSL https://short.dutchdronesquad.nl/install-youtube-chapters)
 3. If the plugin is already in RotorHazard, you'll be prompted to update it.
     - Choose **y (yes)** to update the plugin.
     - Choose **n (no)** to exit the script.
-4. When the installation is finished, restart RotorHazard.
+4. When the installation is finished, restart RotorHazard to load the plugin.
 
 ## Getting started
 
@@ -100,6 +119,9 @@ Distributed under the **MIT** License. See [`LICENSE`](LICENSE) for more informa
 [license-shield]: https://img.shields.io/github/license/dutchdronesquad/rh-youtube-chapters.svg
 [maintenance-shield]: https://img.shields.io/maintenance/yes/2025.svg
 [project-stage-shield]: https://img.shields.io/badge/project%20stage-experimental-yellow.svg
+[rhfest-shield]: https://github.com/dutchdronesquad/rh-youtube-chapters/actions/workflows/rhfest.yaml/badge.svg
+[rhfest-url]: https://github.com/dutchdronesquad/rh-youtube-chapters/actions/workflows/rhfest.yaml
+[rhcp-shield]: https://img.shields.io/badge/RotorHazard-Community_Plugins-orange.svg
 
 [uv]: https://docs.astral.sh/uv/
 [Python]: https://www.python.org/
