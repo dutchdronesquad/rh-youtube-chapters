@@ -121,7 +121,7 @@ Distributed under the **MIT** License. See [`LICENSE`](LICENSE) for more informa
 [project-stage-shield]: https://img.shields.io/badge/project%20stage-experimental-yellow.svg
 [rhfest-shield]: https://github.com/dutchdronesquad/rh-youtube-chapters/actions/workflows/rhfest.yaml/badge.svg
 [rhfest-url]: https://github.com/dutchdronesquad/rh-youtube-chapters/actions/workflows/rhfest.yaml
-[rhcp-shield]: https://img.shields.io/badge/RotorHazard-Community_Plugins-orange
+[rhcp-shield]: https://img.shields.io/badge/RotorHazard-Community_Plugins-orange.svg
 
 [uv]: https://docs.astral.sh/uv/
 [Python]: https://www.python.org/
