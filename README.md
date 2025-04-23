@@ -82,20 +82,21 @@ You need the following tools to get started:
 2. Install all dependencies with UV. This will create a virtual environment and install all dependencies
 
 ```bash
-uv sync
+uv sync --all-groups
 ```
 
-3. Setup the pre-commit check, you must run this inside the virtual environment
+### Pre-commit check
+
+As this repository uses the [pre-commit][pre-commit] framework, all changes
+are linted and tested with each commit.
+
+To install the pre-commit check, run:
 
 ```bash
 uv run pre-commit install
 ```
 
-### Run pre-commit checks
-
-As this repository uses the [pre-commit][pre-commit] framework, all changes
-are linted and tested with each commit. You can run all checks and tests
-manually, using the following command:
+To run all checks and tests manually, use the following command:
 
 ```bash
 uv run pre-commit run --all-files

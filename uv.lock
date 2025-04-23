@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.11"
 
 [[package]]
@@ -207,7 +206,7 @@ wheels = [
 
 [[package]]
 name = "youtube-chapters"
-version = "0.1.0"
+version = "0.0.0"
 source = { virtual = "." }
 
 [package.dev-dependencies]
