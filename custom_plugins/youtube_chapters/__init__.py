@@ -6,6 +6,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+# Falback for Python 3.10 and earlier
+try:
+    from datetime import UTC
+except ImportError:
+    from datetime import timezone
+
+    UTC = timezone.utc  # noqa: UP017
+
 from eventmanager import Evt
 from flask import Blueprint, send_from_directory
 from RHUI import UIField, UIFieldType
@@ -112,9 +120,7 @@ class YouTubeChapters:
 
                     # Parse start_time from ISO format
                     self.start_time = (
-                        datetime.fromisoformat(data["start_time"]).astimezone(
-                            tz=timezone.UTC
-                        )
+                        datetime.fromisoformat(data["start_time"]).astimezone(tz=UTC)
                         if data["start_time"]
                         else None
                     )
@@ -163,7 +169,7 @@ class YouTubeChapters:
             local_time = datetime.strptime(
                 start_time_str, "%Y-%m-%dT%H:%M:%S"
             ).astimezone()
-            self.start_time = local_time.astimezone(tz=timezone.UTC)
+            self.start_time = local_time.astimezone(tz=UTC)
 
             self._rhapi.ui.message_notify(
                 f"Start time set to {self.start_time.strftime('%Y-%m-%d %H:%M:%S UTC')}"
@@ -187,7 +193,7 @@ class YouTubeChapters:
         )
 
         # Log the chapter
-        current_time = datetime.now(tz=timezone.UTC)
+        current_time = datetime.now(tz=UTC)
         self.chapters.append((current_time, heat_name))
         self.logger.info(
             f"{self.PREFIX}: logged '{heat_name}' "
