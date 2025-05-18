@@ -2,9 +2,17 @@
 
 import json
 import logging
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+# Falback for Python 3.10 and earlier
+try:
+    from datetime import UTC
+except ImportError:
+    from datetime import timezone
+
+    UTC = timezone.utc  # noqa: UP017
 
 from eventmanager import Evt
 from flask import Blueprint, send_from_directory
