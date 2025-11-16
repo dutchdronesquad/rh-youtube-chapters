@@ -85,7 +85,7 @@ You need the following tools to get started:
 uv sync --all-groups
 ```
 
-### Pre-commit check
+### Prek check
 
 As this repository uses the [prek][prek] framework, all changes
 are linted and tested with each commit.
