@@ -87,25 +87,25 @@ uv sync --all-groups
 
 ### Pre-commit check
 
-As this repository uses the [pre-commit][pre-commit] framework, all changes
+As this repository uses the [prek][prek] framework, all changes
 are linted and tested with each commit.
 
-To install the pre-commit check, run:
+To install the prek check, run:
 
 ```bash
-uv run pre-commit install
+uv run prek install
 ```
 
 To run all checks and tests manually, use the following command:
 
 ```bash
-uv run pre-commit run --all-files
+uv run prek run --all-files
 ```
 
 To manual run only on the staged files, use the following command:
 
 ```bash
-uv run pre-commit run
+uv run prek run
 ```
 
 ## Credits
@@ -126,4 +126,4 @@ Distributed under the **MIT** License. See [`LICENSE`](LICENSE) for more informa
 
 [uv]: https://docs.astral.sh/uv/
 [Python]: https://www.python.org/
-[pre-commit]: https://pre-commit.com/
+[prek]: https://github.com/j178/prek
