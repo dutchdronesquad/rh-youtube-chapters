@@ -185,10 +185,10 @@ class YouTubeChapters:
         heat_info: Heat = self._rhapi.db.heat_by_id(args.get("heat_id"))
         round_number = self._rhapi.db.heat_max_round(args.get("heat_id"))
 
-        # Set heat name to "Practice" if display_name is None else use display_name
+        # Set heat name to "Practice" if heat_info or display_name is None
         heat_name = (
             "Practice"
-            if heat_info.display_name is None
+            if heat_info is None or heat_info.display_name is None
             else f"{heat_info.display_name} (Round {round_number + 1})"
         )
 
