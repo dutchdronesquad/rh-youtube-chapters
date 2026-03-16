@@ -6,6 +6,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+# Falback for Python 3.10 and earlier
+try:
+    from datetime import UTC
+except ImportError:
+    from datetime import timezone
+
+    UTC = timezone.utc  # noqa: UP017
+
 from eventmanager import Evt
 from flask import Blueprint, send_from_directory
 from RHUI import UIField, UIFieldType
@@ -17,9 +25,6 @@ if TYPE_CHECKING:
 class YouTubeChapters:
     """YouTube Chapters plugin class."""
 
-    BASE_DIR = Path(__file__).parent
-    EXPORT_DIR = BASE_DIR / "data"
-    LOG_FILE = EXPORT_DIR / "chapterslog.json"
     PREFIX = "YT Chapters"
 
     def __init__(self, rhapi: object) -> None:
@@ -35,11 +40,16 @@ class YouTubeChapters:
         self.start_time = None
         self.chapters = []
 
-        # Register UI elements
-        self._register_ui()
+        # Determine plugin data location
+        self.BASE_DIR = Path(self._rhapi.server.data_dir)
+        self.EXPORT_DIR = self.BASE_DIR / "youtube_chapters"
+        self.LOG_FILE = self.EXPORT_DIR / "chapterslog.json"
 
         # Create a data directory if it doesn't exist
-        Path(self.EXPORT_DIR).mkdir(parents=True, exist_ok=True)
+        self.EXPORT_DIR.mkdir(parents=True, exist_ok=True)
+
+        # Register UI elements
+        self._register_ui()
 
     def _register_ui(self) -> None:
         """Register UI elements."""
@@ -58,9 +68,9 @@ class YouTubeChapters:
             field=UIField(
                 name="start_time",
                 label="Start Time of Livestream",
-                field_type=UIFieldType.TEXT,
-                desc="Fill in the format: YYYY-MM-DDTHH:MM:SS",
-                placeholder="YYYY-MM-DDTHH:MM:SS",
+                field_type=UIFieldType.DATETIME,
+                html_attributes={"step": "1"},
+                desc="The date/time your livestream started.",
             ),
             panel="youtube_chapters",
         )
@@ -110,9 +120,7 @@ class YouTubeChapters:
 
                     # Parse start_time from ISO format
                     self.start_time = (
-                        datetime.fromisoformat(data["start_time"]).astimezone(
-                            timezone.utc
-                        )
+                        datetime.fromisoformat(data["start_time"]).astimezone(tz=UTC)
                         if data["start_time"]
                         else None
                     )
@@ -161,7 +169,7 @@ class YouTubeChapters:
             local_time = datetime.strptime(
                 start_time_str, "%Y-%m-%dT%H:%M:%S"
             ).astimezone()
-            self.start_time = local_time.astimezone(timezone.utc)
+            self.start_time = local_time.astimezone(tz=UTC)
 
             self._rhapi.ui.message_notify(
                 f"Start time set to {self.start_time.strftime('%Y-%m-%d %H:%M:%S UTC')}"
@@ -177,15 +185,15 @@ class YouTubeChapters:
         heat_info: Heat = self._rhapi.db.heat_by_id(args.get("heat_id"))
         round_number = self._rhapi.db.heat_max_round(args.get("heat_id"))
 
-        # Set heat name to "Practice" if display_name is None else use display_name
+        # Set heat name to "Practice" if heat_info or display_name is None
         heat_name = (
             "Practice"
-            if heat_info.display_name is None
+            if heat_info is None or heat_info.display_name is None
             else f"{heat_info.display_name} (Round {round_number + 1})"
         )
 
         # Log the chapter
-        current_time = datetime.now(timezone.utc)
+        current_time = datetime.now(tz=UTC)
         self.chapters.append((current_time, heat_name))
         self.logger.info(
             f"{self.PREFIX}: logged '{heat_name}' "
@@ -273,7 +281,7 @@ class YouTubeChapters:
                 file.write(f"{formatted_time} - {heat_name}\n")
 
         self._rhapi.ui.message_notify(
-            f"YouTube chapters exported to data/{export_file.name}"
+            f"YouTube chapters exported to rh-data/youtube_chapters/{export_file.name}"
         )
         self.logger.info(f"{self.PREFIX}: exported to {export_file}.")
 
@@ -313,7 +321,7 @@ def initialize(rhapi: object) -> None:
     rhapi.events.on(Evt.STARTUP, plugin.load_chapters)
     rhapi.events.on(Evt.RACE_STAGE, plugin.on_race_start)
 
-    bp = Blueprint("chapter_files", __name__, static_folder="data")
+    bp = Blueprint("chapter_files", __name__)
 
     @bp.route("/data/<path:filename>")
     def download_file(filename: str) -> None:
