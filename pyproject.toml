@@ -34,5 +34,6 @@ lint.ignore = [
   "ISC001",
 
   # Custom ignores
+  "CPY001",  # Copyright is documented in LICENSE, not per-file headers
   "G004",    # Allow f-string in logging
 ]
